@@ -23,5 +23,6 @@
             android:layout_height="match_parent"
             android:id="@+id/item_list"
             />
+
     </LinearLayout>
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class GroceryList extends AppCompatActivity {
     private SQLiteDatabase db;
     private SimpleCursorAdapter adapter;
     ListView item_list;
+    CardView cardView;
     Cursor cursor;
 
 
@@ -55,9 +57,8 @@ public class GroceryList extends AppCompatActivity {
     private void refreshListView(){
             cursor = getAll();
 
-            adapter = new SimpleCursorAdapter(context, R.layout.list_row, cursor, new String[] {"_id","item_name", "number", "unit", "end_date"}
+            adapter = new SimpleCursorAdapter(context, R.layout.cardview, cursor, new String[] {"_id","item_name", "number", "unit", "end_date"}
                     , new int[] {R.id.itemId, R.id.itemName, R.id.itemCount, R.id.itemUnit, R.id.itemExpire}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
             item_list.setAdapter(adapter);
             cursor = null;
 
