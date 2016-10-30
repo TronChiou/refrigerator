@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Refrigerator</string>
+    <string name="expire_alert">expire_alert</string>
+    <string name="item_list">item_list</string>
+    <string name="item_name">item_name</string>
+    <string name="count">count</string>
+    <string name="expire_date">expire_date</string>
+    <string name="unit">unit</string>
+    <string name="add_button">add_button</string>
+    <string name="save_button">save_button</string>
+    <string name="add_title">ADD</string>
+    <string name="modify">MODIFY</string>
+    <string name="ok_button">Save</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+
+
+    <string name="title_activity_grocery_list">GroceryList</string>
+</resources>
