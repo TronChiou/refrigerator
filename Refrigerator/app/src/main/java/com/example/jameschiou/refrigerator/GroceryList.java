@@ -22,6 +22,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import dbHelper.DBHelper;
+import refresh.Refresh;
 
 public class GroceryList extends AppCompatActivity {
 
@@ -30,8 +31,8 @@ public class GroceryList extends AppCompatActivity {
     private SQLiteDatabase db;
     private SimpleCursorAdapter adapter;
     ListView item_list;
-    CardView cardView;
     Cursor cursor;
+    private Refresh refresh;
 
 
     @Override
@@ -44,26 +45,16 @@ public class GroceryList extends AppCompatActivity {
         item_list = (ListView)findViewById(R.id.item_list);
         item_list.setOnItemClickListener(new MyOnItemClickListener());
 
-        refreshListView();
-
 
     }
-
-    public Cursor getAll(){
-        Cursor cursor = db.rawQuery("SELECT _id, item_name, number, unit, end_date FROM grocery_list", null);
-        return cursor;
+    protected void onResume(){
+        super.onResume();
+        String str = "SELECT _id, item_name, number, unit, date(start_date + end_date) FROM grocery_list";
+        cursor = db.rawQuery(str, null);
+        refresh = new Refresh(R.layout.cardview, db, context, cursor, item_list);
+        refresh.execute();
     }
 
-    private void refreshListView(){
-            cursor = getAll();
-
-            adapter = new SimpleCursorAdapter(context, R.layout.cardview, cursor, new String[] {"_id","item_name", "number", "unit", "end_date"}
-                    , new int[] {R.id.itemId, R.id.itemName, R.id.itemCount, R.id.itemUnit, R.id.itemExpire}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-            item_list.setAdapter(adapter);
-            cursor = null;
-
-
-    }
     private class MyOnItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -82,9 +73,10 @@ public class GroceryList extends AppCompatActivity {
                 edit_count.setText(cursor.getString(1));
                 edit_unit.setText(cursor.getString(2));
                 edit_expire.setText(cursor.getString(3));
+                cursor = null;
             }
             else
-                Toast.makeText(getApplicationContext(), "No data found!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Cursor failed!", Toast.LENGTH_LONG).show();
 
 
 
@@ -104,11 +96,12 @@ public class GroceryList extends AppCompatActivity {
 
                     try {
                         db.execSQL(str);
+                        onResume();
                         Log.d("sql", str);
                     }catch(Exception e){
                         Toast.makeText(getApplicationContext(),"broken",Toast.LENGTH_LONG).show();
                     }
-                    refreshListView();
+
 
                 }
             });
@@ -117,11 +110,11 @@ public class GroceryList extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     try {
                         db.execSQL("DELETE FROM grocery_list WHERE _id = "+ id);
+                        onResume();
                         Log.d("sql", "DELETE FROM grocery_list WHERE _id = "+ id);
                     }catch(Exception e){
                         Toast.makeText(getApplicationContext(),"broken delete",Toast.LENGTH_LONG).show();
                     }
-                    refreshListView();
                 }
             });
             builder.setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
@@ -132,6 +125,7 @@ public class GroceryList extends AppCompatActivity {
             });
 
             builder.create().show();
+
             }
 
         }

@@ -27,9 +27,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
 
 import dbHelper.DBHelper;
+import refresh.Refresh;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,8 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private Cursor cursor;
     private SimpleCursorAdapter adapter;
     private FloatingActionButton fab1;
+    private String str_alert;
+    private String str_list;
     ListView alert;
     ListView item;
+    Refresh refresh;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -52,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
         db = dbHelper.getReadableDatabase();
         alert = (ListView)findViewById(R.id.alert_list);
         item = (ListView)findViewById(R.id.item);
-        refreshListView(alert);
-        refreshListView(item);
         item.setOnItemClickListener(new MyOnItemClickListener());
         fab1 = (FloatingActionButton)findViewById(R.id.fab1);
         fab1.setOnClickListener(new View.OnClickListener() {
@@ -65,17 +66,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    protected void onResume(){
+        super.onResume();
+        str_alert = "SELECT _id, item_name, number, unit,start_date, date(start_date + end_date) FROM grocery_list ORDER BY (start_date + end_date) ASC  limit 5";
+        str_list = "SELECT _id, item_name, number, unit, date(start_date + end_date) FROM grocery_list ORDER BY _id DESC limit 5";
+        cursor = db.rawQuery(str_alert, null);
+        refresh = new Refresh(R.layout.list_row, db, context, cursor, alert);
+        refresh.execute();
+
+        cursor = db.rawQuery(str_list, null);
+        refresh = new Refresh(R.layout.list_row, db, context, cursor, item);
+        refresh.execute();
+
+    }
 
     public void fabClick(){
         LayoutInflater inflater = getLayoutInflater();
         final View layout = inflater.inflate(R.layout.activity_add_grocery, (ViewGroup)findViewById(R.id.root));
-        Button add = (Button)layout.findViewById(R.id.save_btn);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.add_title);
         builder.setView(layout);
@@ -87,15 +95,30 @@ public class MainActivity extends AppCompatActivity {
                 EditText edit_unit = (EditText)layout.findViewById(R.id.edit_unit);
                 EditText edit_expire = (EditText)layout.findViewById(R.id.edit_expire);
                 String name = edit_name.getText().toString();
-                int count = Integer.parseInt(edit_count.getText().toString());
+                int count;
+                if(edit_count.getText().toString().equals("")){
+                    count = 0;
+                }
+                else
+                    count = Integer.parseInt(edit_count.getText().toString());
+
                 String unit = edit_unit.getText().toString();
-                int expire = Integer.parseInt(edit_expire.getText().toString());
-                String str = "INSERT INTO grocery_list(item_name, number, unit, end_date) VALUES('"
-                        + name +"', "+ count+", '" +  unit+"', "+  expire +"  )";
+
+                int expire;
+                if(edit_expire.getText().toString().equals(""))
+                    expire = 0;
+                else
+                    expire = Integer.parseInt(edit_expire.getText().toString()) ;
+
+                String str = "INSERT INTO grocery_list(item_name, number, unit, start_date, end_date) VALUES('"
+                        + name +"', "+ count+", '" +  unit+"', julianday('now'), "+  expire +"  )";
+                Log.d("str1", str);
                 try {
                     db.execSQL(str);
+                    onResume();
                 }catch(Exception e){
                     Toast.makeText(getApplicationContext(),"broken",Toast.LENGTH_LONG).show();
+                    Log.d("str", str);
                 }
                 Toast.makeText(getApplicationContext(),name + count + unit+ expire,Toast.LENGTH_LONG).show();
             }
@@ -110,29 +133,8 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    public Cursor getAll(){
-        Cursor cursor = db.rawQuery("SELECT _id, item_name, number, unit, end_date FROM grocery_list limit 5", null);
-        return cursor;
-    }
 
-    private void refreshListView(ListView listView){
-        if(cursor == null) {
-            cursor = getAll();
 
-            adapter = new SimpleCursorAdapter(context, R.layout.list_row, cursor, new String[] {"_id","item_name", "number", "unit", "end_date"}
-                    , new int[] {R.id.itemId, R.id.itemName, R.id.itemCount, R.id.itemUnit, R.id.itemExpire}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-            listView.setAdapter(adapter);
-            cursor = null;
-
-        }
-        else{
-            if (cursor.isClosed()) {
-                cursor = null;
-                refreshListView(listView);
-            }
-        }
-    }
 
     private class MyOnItemClickListener implements AdapterView.OnItemClickListener {
         @Override

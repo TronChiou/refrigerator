@@ -24,22 +24,24 @@
             android:text="@string/expire_alert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView1" />
+            android:id="@+id/textView1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="160dp"
             android:id="@+id/alert_list"
             />
         <TextView
             android:text="@string/item_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2" />
+            android:id="@+id/textView2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="160dp"
             android:id="@+id/item"
             />
 
@@ -47,6 +49,7 @@
         <android.support.design.widget.FloatingActionButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:clickable="true"
             app:fabSize="mini"
             app:srcCompat="@android:drawable/ic_input_add"

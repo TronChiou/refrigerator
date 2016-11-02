@@ -12,7 +12,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE " +
             "grocery_list (_id INTEGER PRIMARY KEY, item_name TEXT, number NUMERIC, "+
-            "unit TEXT, start_date TIMESTAMP default CURRENT_TIMESTAMP, end_date NUMERIC)";
+            "unit TEXT, start_date NUMERIC, end_date NUMERIC)";
     public static final String DROP_TABLE_SQL =
             "DROP TABLE IF EXISTS grocery_list";
     public DBHelper(Context context){

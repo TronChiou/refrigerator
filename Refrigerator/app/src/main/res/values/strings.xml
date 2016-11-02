@@ -4,10 +4,9 @@
     <string name="item_list">item_list</string>
     <string name="item_name">item_name</string>
     <string name="count">count</string>
-    <string name="expire_date">expire_date</string>
+    <string name="expire_date">left_days</string>
     <string name="unit">unit</string>
     <string name="add_button">add_button</string>
-    <string name="save_button">save_button</string>
     <string name="add_title">ADD</string>
     <string name="modify">MODIFY</string>
     <string name="ok_button">Save</string>
